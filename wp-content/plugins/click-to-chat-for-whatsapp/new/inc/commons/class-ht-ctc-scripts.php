@@ -47,6 +47,7 @@ class HT_CTC_Scripts {
         $load_app_js_bottom = apply_filters( 'ht_ctc_fh_load_app_js_bottom', true );
 
         // js
+        $css = 'main.css';
         $js = 'app.js';
         // $js = '332.app.js';
         $woo_js = 'woo.js';
@@ -54,6 +55,7 @@ class HT_CTC_Scripts {
         $share_js = 'share.js';
 
         if ( isset($os['debug_mode']) ) {
+            $css = 'dev/main.dev.css';
             $js = 'dev/app.dev.js';
             $woo_js = 'dev/woo.dev.js';
             $group_js = 'dev/group.dev.js';
@@ -62,6 +64,9 @@ class HT_CTC_Scripts {
 
 
         do_action('ht_ctc_ah_scripts_before');
+
+        // enqueue main.css
+        wp_enqueue_style( 'ht_ctc_main_css', plugins_url( "new/inc/assets/css/$css", HT_CTC_PLUGIN_FILE ), '', HT_CTC_VERSION );
 
         // app.js for all (chat)
         wp_enqueue_script( 'ht_ctc_app_js', plugins_url( "new/inc/assets/js/$js", HT_CTC_PLUGIN_FILE ), array ( 'jquery' ), HT_CTC_VERSION, $load_app_js_bottom );

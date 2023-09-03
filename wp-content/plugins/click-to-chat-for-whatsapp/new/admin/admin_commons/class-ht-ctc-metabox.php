@@ -188,7 +188,11 @@ class HT_CTC_MetaBox {
 				foreach ($ht_ctc_pagelevel as $key => $value) {
 					if( isset( $ht_ctc_pagelevel[$key] ) ) {
 						if ( 'pre_filled' == $key ) {
-							$new[$key] = sanitize_textarea_field( $ht_ctc_pagelevel[$key] );
+							if ( function_exists('sanitize_textarea_field') ) {
+								$new[$key] = sanitize_textarea_field( $ht_ctc_pagelevel[$key] );
+							} else {
+								$new[$key] = sanitize_text_field( $ht_ctc_pagelevel[$key] );
+							}
 						} else if ( 'call_to_action' == $key ) {
 							$new[$key] = sanitize_text_field( $ht_ctc_pagelevel[$key] );
 						}  else if ( in_array( $key, $editor ) ) {

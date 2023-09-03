@@ -71,7 +71,11 @@ if ( ! function_exists('ht_ctc_wp_sanitize_text_editor') ) {
 			$new_value = htmlentities( $new_value );
 			
 			// (may not needed - but extra security)
-			$new_value = sanitize_textarea_field( $new_value );
+			if ( function_exists('sanitize_textarea_field') ) {
+				$new_value = sanitize_textarea_field( $new_value );
+			} else {
+				$new_value = sanitize_text_field( $new_value );
+			}
 		}
 		
 		return $new_value;

@@ -149,7 +149,7 @@ $display_mobile = (isset($options['display_mobile'])) ? esc_attr( $options['disp
 
 <br>
 
-<p class="description" style="margin:16px 0px 20px 0px;"><strong><?php _e( 'Override the Global settings', 'click-to-chat-for-whatsapp' ); ?></strong></p>
+<p class="description" style="margin:16px 0px 20px 0px;"><strong><?php _e( 'Overwrite the Global settings', 'click-to-chat-for-whatsapp' ); ?></strong></p>
 <?php
 
 foreach ($show_hide_settings as $key => $value) {
@@ -248,30 +248,43 @@ foreach ($show_hide_settings as $key => $value) {
 
 <?php
 
-if ( !defined('HT_CTC_PRO_VERSION') && isset($type) && 'chat' == $type ) {
-    ?>
-    <div class="ctc_pro_content" style="margin-bottom: 25px;">
-        <p class="description">Display After Time Delay</p>
-        <p class="description">Display After User Scroll</p>
-        <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/pricing/">PRO</a></p>
-    </div>
-
-    <?php
-}
-
 if ( 'chat' == $type ) {
     do_action('ht_ctc_ah_admin_chat_after_showhide');
 }
 do_action('ht_ctc_ah_admin_after_showhide');
 ?>
 
-<p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/show-hide-styles/"><?php _e( 'more info', 'click-to-chat-for-whatsapp' ); ?></a> </p>
-<br>
-<p class="description"><?php _e( 'Usecases', 'click-to-chat-for-whatsapp' ); ?>:</p>
-<p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/show-only-on-selected-pages/"><?php _e( 'Show only on selected pages', 'click-to-chat-for-whatsapp' ); ?></a><?php _e( ' (Single, Cart, Checkout page)', 'click-to-chat-for-whatsapp' ); ?></p>
-<p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/hide-only-on-selected-pages/"><?php _e( 'Hide only on selected pages', 'click-to-chat-for-whatsapp' ); ?></a><?php _e( ' (Single, Cart, Checkout page)', 'click-to-chat-for-whatsapp' ); ?></p>
-<p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/show-hide-on-mobile-desktop/"><?php _e( 'Show/Hide on Mobile/Desktop', 'click-to-chat-for-whatsapp' ); ?></a></p>
+<p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/show-hide-styles/"><?php _e( 'Display Settings', 'click-to-chat-for-whatsapp' ); ?></a> </p>
+<!-- <details style="margin-top:5px;">
+    <summary style="cursor:pointer;"><?php _e( 'Usecases', 'click-to-chat-for-whatsapp' ); ?></summary>
+    <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/show-only-on-selected-pages/"><?php _e( 'Show only on selected pages', 'click-to-chat-for-whatsapp' ); ?></a><?php _e( ' (Single, Cart, Checkout page)', 'click-to-chat-for-whatsapp' ); ?></p>
+    <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/hide-only-on-selected-pages/"><?php _e( 'Hide only on selected pages', 'click-to-chat-for-whatsapp' ); ?></a><?php _e( ' (Single, Cart, Checkout page)', 'click-to-chat-for-whatsapp' ); ?></p>
+    <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/show-hide-on-mobile-desktop/"><?php _e( 'Show/Hide on Mobile/Desktop', 'click-to-chat-for-whatsapp' ); ?></a></p>
+</details> -->
 
+<?php
+if ( !defined('HT_CTC_PRO_VERSION') && isset($type) && 'chat' == $type ) {
+    ?>
+    <br><hr><br>
+
+    <p class="description">PRO</p>
+
+    <div class="ctc_pro_content" style="margin-bottom: 25px;">
+        <p class="description ht_ctc_subtitle"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/time-delay-scroll/"><?php _e( 'Time, Scroll Delay', 'click-to-chat-for-whatsapp' ); ?></a></p>
+        <p class="description ht_ctc_content_point"><?php _e( 'Display After Time Delay', 'click-to-chat-for-whatsapp' ); ?></p>
+        <p class="description ht_ctc_content_point"><?php _e( 'Display After User Scroll', 'click-to-chat-for-whatsapp' ); ?></p>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+        <p class="description ht_ctc_subtitle"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/business-hours-online-offline/"><?php _e( 'Business Hours', 'click-to-chat-for-whatsapp' ); ?> (<?php _e( 'online/offline', 'click-to-chat-for-whatsapp' ); ?>)</a></p>
+        <p class="description ht_ctc_content_point"><?php _e( 'Hide When offline', 'click-to-chat-for-whatsapp' ); ?> (or)</p>
+        <p class="description ht_ctc_content_point"><?php _e( 'Change WhatsApp Number When Offline', 'click-to-chat-for-whatsapp' ); ?></p>
+        <p class="description ht_ctc_content_point"><?php _e( 'Change Call to Action When Offline', 'click-to-chat-for-whatsapp' ); ?></p>
+    </div>
+
+    <?php
+}
+?>
 
 </div>
 </li>

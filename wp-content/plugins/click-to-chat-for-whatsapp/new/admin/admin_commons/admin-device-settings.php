@@ -244,7 +244,7 @@ if ( isset( $options['same_settings'] ) ) {
 <br class="not_samesettings">
 <hr class="not_samesettings" style="max-width: 500px;">
 <br class="not_samesettings">
-<p class="description"><span class="not_samesettings select_styles_issue_description" style="font-size: 0.7em;">If Styles for desktop, mobile not selected as expected <span style="color: #039be5; cursor: pointer;">Check this</span>, - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/select-styles/">more info</a></span></p>
+<p class="description"><span class="not_samesettings select_styles_issue_description" style="font-size: 0.7em;">If Styles for desktop, mobile not selected as expected <span style="color: #039be5; cursor: pointer;">Check this</span>, - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/select-styles/#styles-not-applied">more info</a></span></p>
 
 <div class="select_styles_issue_checkbox ctc_init_display_none" style="">
     <?php

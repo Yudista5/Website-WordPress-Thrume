@@ -55,8 +55,10 @@ class HT_CTC_Admin_Main_Page {
                 </div>
 
                 <!-- sidebar content -->
-                <div class="col s12 m9 l7 xl4 ht-ctc-admin-sidebar sticky-sidebar">
-                    <?php include_once HT_CTC_PLUGIN_DIR .'new/admin/admin_commons/admin-sidebar-content.php'; ?>
+                <div class="col s12 m9 l7 xl4 ht-ctc-admin-sidebar sticky-sidebar ctc_scrollbar">
+                    <div class="ctc_scrollbar_2">
+                        <?php include_once HT_CTC_PLUGIN_DIR .'new/admin/admin_commons/admin-sidebar-content.php'; ?>
+                    </div>
                 </div>
                 
             </div>
@@ -85,6 +87,8 @@ class HT_CTC_Admin_Main_Page {
         add_settings_field( 'prefilled', __( 'Pre-Filled Message', 'click-to-chat-for-whatsapp'), array( $this, 'prefilled_cb' ), 'ht_ctc_main_page_settings_sections_do', 'ht_ctc_chat_page_settings_sections_add' );
         add_settings_field( 'cta', __( 'Call to Action', 'click-to-chat-for-whatsapp'), array( $this, 'cta_cb' ), 'ht_ctc_main_page_settings_sections_do', 'ht_ctc_chat_page_settings_sections_add' );
         add_settings_field( 'ctc_desktop', __( 'Style, Position', 'click-to-chat-for-whatsapp'), array( $this, 'ctc_device_cb' ), 'ht_ctc_main_page_settings_sections_do', 'ht_ctc_chat_page_settings_sections_add' );
+        // @since 3.23 URL Structure field moved to ctc main settings from other settings
+        add_settings_field( 'ctc_url_strucutre', __( 'URL Structure', 'click-to-chat-for-whatsapp'), array( $this, 'ctc_url_strucutre_cb' ), 'ht_ctc_main_page_settings_sections_do', 'ht_ctc_chat_page_settings_sections_add' );
         add_settings_field( 'ctc_show_hide', __( 'Display Settings', 'click-to-chat-for-whatsapp'), array( $this, 'ctc_show_hide_cb' ), 'ht_ctc_main_page_settings_sections_do', 'ht_ctc_chat_page_settings_sections_add' );
         
         add_settings_field( 'options', '', array( $this, 'options_cb' ), 'ht_ctc_main_page_settings_sections_do', 'ht_ctc_chat_page_settings_sections_add' );
@@ -111,6 +115,7 @@ class HT_CTC_Admin_Main_Page {
      */
     function number_cb() {
         $options = get_option('ht_ctc_chat_options');
+        $os = get_option('ht_ctc_othersettings');
         $cc = ( isset( $options['cc']) ) ? esc_attr( $options['cc'] ) : '';
         $num = ( isset( $options['num']) ) ? esc_attr( $options['num'] ) : '';
         $number = ( isset( $options['number']) ) ? esc_attr( $options['number'] ) : '';
@@ -125,10 +130,29 @@ class HT_CTC_Admin_Main_Page {
         }
 
         $intl = '1';
+
         if ( isset( $options['intl'] ) || '' == $number ) {
             $intl = '2';
         }
 
+        // if number is not set, then it might be an issue with initl. load 1.
+        if ( ! isset($options['number']) ) {
+            $intl = '1';
+        }
+
+        // if no-intl is enabled then load 1
+        if ( isset($os['no-intl']) ) {
+            $intl = '1';
+        }
+
+        // if _get have number-field 1 then load 1 else if 2 then load 2 ( &number-field=1 )
+        if ( isset($_GET) && isset( $_GET['number-field'] ) ) {
+            if ( '1' == $_GET['number-field'] ) {
+                $intl = '1';
+            } else if ( '2' == $_GET['number-field'] ) {
+                $intl = '2';
+            }
+        }
 
         ?>
 
@@ -247,10 +271,7 @@ class HT_CTC_Admin_Main_Page {
                 <p class= "description">To Change Pre-filled Message, Call to action for WooCommerce Single Product Pages <a target="_blank" href="<?= $woo_link ?>">( Click to Chat -> WooCommerce )</a></p>
                 <?php
             }
-
-            $other_settings_link = admin_url( 'admin.php?page=click-to-chat-other-settings#url_structure' );
             ?>
-            <p class= "description" style="margin-top:40px;"><strong>'Web WhatsApp'</strong> feature is moved to 'Other Settings' <a target="_blank" href="<?= $other_settings_link ?>">( Click to Chat -> Other Settings - URL Structure )</a>
             </p>
             </div>
         </div>
@@ -267,6 +288,126 @@ class HT_CTC_Admin_Main_Page {
         include_once HT_CTC_PLUGIN_DIR .'new/admin/admin_commons/admin-device-settings.php';
     }
 
+    /**
+     * url strucutre 
+     * @since 3.23 (moved from other settings to main settings)
+     * initially started as web whatsapp here 
+     *   from @version 3.12 moved to other settings as url structure now again moved to main settings.
+     */
+    function ctc_url_strucutre_cb() {
+        $options = get_option('ht_ctc_chat_options');
+        $dbrow = 'ht_ctc_chat_options';
+        $type = 'chat';
+
+        // url structure
+        $url_target_d = ( isset( $options['url_target_d']) ) ? esc_attr( $options['url_target_d'] ) :'_blank';
+        $url_structure_d = ( isset( $options['url_structure_d']) ) ? esc_attr( $options['url_structure_d'] ) :'';
+        $url_structure_m = ( isset( $options['url_structure_m']) ) ? esc_attr( $options['url_structure_m'] ) :'';
+
+        $url_structure_d_list = array(
+            'default' => '(' . __( 'Default', 'click-to-chat-for-whatsapp') .') wa.me',
+            'web' => 'Web WhatsApp'
+        );
+        
+        $url_structure_m_list = array(
+            'default' => '(' . __( 'Default', 'click-to-chat-for-whatsapp') .') wa.me',
+            'wa_colon' => 'WhatsApp://'
+        );
+
+        $url_structure_d_list = apply_filters( 'ht_ctc_fh_url_structure_d_list', $url_structure_d_list );
+        $url_structure_m_list = apply_filters( 'ht_ctc_fh_url_structure_m_list', $url_structure_m_list );
+        ?>
+
+        <ul class="collapsible url_structure" id="url_structure">
+        <li class="">
+        <div class="collapsible-header"><?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></div>
+        <div class="collapsible-body">
+
+        <p class="description" style="margin: 0 0 20px 0;"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/url-structure/"><?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></a> </p>
+
+        <p class="description ht_ctc_subtitle" style="margin-bottom: 11px;"><?php _e( 'Desktop', 'click-to-chat-for-whatsapp' ); ?>:</p>
+        <div class="row">
+            <div class="col s6">
+                <p><?php _e( 'Open links in', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <select name="<?= $dbrow; ?>[url_target_d]" class="url_target_d">
+                    <option value="_blank" <?= $url_target_d == '_blank' ? 'SELECTED' : ''; ?> ><?php _e( 'New Tab', 'click-to-chat-for-whatsapp' ); ?></option>
+                    <option value="popup" <?= $url_target_d == 'popup' ? 'SELECTED' : ''; ?> ><?php _e( 'Pop-up', 'click-to-chat-for-whatsapp' ); ?></option>
+                    <option value="_self" <?= $url_target_d == '_self' ? 'SELECTED' : ''; ?> ><?php _e( 'Same Tab', 'click-to-chat-for-whatsapp' ); ?></option>
+                </select>
+                <label><?php _e( 'Open links in', 'click-to-chat-for-whatsapp' ); ?></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s6">
+                <p><?php _e( 'Desktop', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <select name="<?= $dbrow; ?>[url_structure_d]" class="url_structure_d">
+                    <?php 
+                    foreach ( $url_structure_d_list as $key => $value ) {
+                    ?>
+                    <option value="<?= $key ?>" <?= $url_structure_d == $key ? 'SELECTED' : ''; ?> ><?= $value ?></option>
+                    <?php
+                    }
+                    if ( ! defined( 'HT_CTC_PRO_VERSION' ) ) {
+                        ?>
+                        <!-- <option disabled="disabled" value="">Custom URL (PRO)</option> -->
+                        <?php
+                    }
+                    ?>
+                    
+                </select>
+                <label><?php _e( 'Desktop', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></label>
+                <p class="description" style="font-size: 11px;">
+                    <span style="font-weight: 500;">Wa.me</span>: To open WhatsApp Desktop app <br>
+                    <span style="font-weight: 500;">Web WhatsApp</span>: Opens web.whatsapp.com<br>
+                    <span style="font-weight: 500;">Custom URL</span>: Add any URL (PRO). 
+                </p>
+            </div>
+        </div>
+
+        <?php do_action('ht_ctc_ah_url_structure_desktop'); ?>
+        
+        <p class="description ht_ctc_subtitle" style="margin-bottom: 11px;"><?php _e( 'Mobile', 'click-to-chat-for-whatsapp' ); ?>:</p>
+        <div class="row">
+            <div class="col s6">
+                <p><?php _e( 'Mobile', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <select name="<?= $dbrow; ?>[url_structure_m]" class="url_structure_m">
+                    <?php 
+                    foreach ( $url_structure_m_list as $key => $value ) {
+                    ?>
+                    <option value="<?= $key ?>" <?= $url_structure_m == $key ? 'SELECTED' : ''; ?> ><?= $value ?></option>
+                    <?php
+                    }
+                    ?>
+                </select>
+                <label><?php _e( 'Mobile', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></label>
+                <p class="description" style="font-size: 11px;">
+                    <span style="font-weight: 500;">Wa.me</span>: Opens WhatsApp Mobile app <br>
+                    <span style="font-weight: 500;">WhatsApp://</span>: Opens WhatsApp Mobile app directly<br>
+                    <span style="font-weight: 500;">Custom URL</span>: Add any URL (PRO).
+                </p>
+            </div>
+        </div>
+
+        <?php do_action('ht_ctc_ah_url_structure_mobile'); ?>
+        
+        <p class="description" style="">PRO: <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/custom-url/"><?php _e( 'Custom URL', 'click-to-chat-for-whatsapp' ); ?></a> </p>
+
+
+        </div>
+        </li>
+        </ul>
+        <br>
+        <?php
+
+    }
+
     // show/hide 
     function ctc_show_hide_cb() {
         $options = get_option('ht_ctc_chat_options');
@@ -279,25 +420,13 @@ class HT_CTC_Admin_Main_Page {
 
     // More options - for addon plugins
     function options_cb() {
-        if ( !defined('HT_CTC_PRO_VERSION') ) {
-            ?>
-            <div style="margin-bottom: 25px;">
-                <p class="description">Business Hour (online/offline)</p>
-                    <p class="description">&emsp;Hide When offline (or)</p>
-                    <p class="description">&emsp;Change WhatsApp Number When Offline</p>
-                    <p class="description">&emsp;Change Call to Action When Offline</p>
-                <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/pricing/">PRO</a></p>
-            </div>
-
-            <?php
-        }
         do_action('ht_ctc_ah_admin_chat_more_options');
     }
 
     function ctc_notes_cb() {
         
         $woo_link = 'https://holithemes.com/plugins/click-to-chat/woocommerce/';
-        $woo_text = '';
+        $woo_text = '(Add, Overwrite settings for WooCommerce pages)';
 
         if ( class_exists( 'WooCommerce' ) ) {
             $woo_link = admin_url( 'admin.php?page=click-to-chat-woocommerce' );
@@ -307,15 +436,15 @@ class HT_CTC_Admin_Main_Page {
 
 
         ?>
-        <p class="description"><a target="_blank" href="<?= admin_url( 'admin.php?page=click-to-chat-greetings' ); ?>">Greetings</a>: Greetings-1, Greetings-2, Form filling(PRO), Multi Agent(PRO)</p>
-        <p class="description"><a target="_blank" href="<?= admin_url( 'admin.php?page=click-to-chat-customize-styles' ); ?>">Customize Styles</a></p>
-        <p class="description"><a target="_blank" href="<?= admin_url( 'admin.php?page=click-to-chat-other-settings' ); ?>">Other Settings</a></p>
-        <p class="description"><a target="_blank" href="<?= $woo_link ?>">WooCommerce</a> <?= $woo_text ?></p>
+        <p class="description">🎉 <a target="_blank" class="em_1_1" href="<?= admin_url( 'admin.php?page=click-to-chat-greetings' ); ?>">Greetings</a>: Greetings-1, Greetings-2, Form filling(PRO), Multi Agent(PRO)</p>
+        <p class="description">🎨 <a target="_blank" class="em_1_1" href="<?= admin_url( 'admin.php?page=click-to-chat-customize-styles' ); ?>">Customize Styles</a>: (Customize style to match your website design - color, size, call to action hover effects, ...)</p>
+        <p class="description">⚙️ <a target="_blank" class="em_1_1" href="<?= admin_url( 'admin.php?page=click-to-chat-other-settings' ); ?>">Other Settings</a>: (Analytics, Animations, Notification Badge, Webhooks, ...)</p>
+        <p class="description">🛍️ <a target="_blank" class="em_1_1" href="<?= $woo_link ?>">WooCommerce</a>: <?= $woo_text ?></p>
         <br>
-        <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/custom-element">Custom Element: </a>Class name: ctc_chat  |  Href/Link: #ctc_chat</p>
+        <p class="description">🌈 <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/custom-element">Custom Element: </a>Class name: ctc_chat  |  Href/Link: #ctc_chat</p>
         <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/shortcodes-chat">Shortcodes for Chat: </a>[ht-ctc-chat]</p>
         <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/faq">Frequently Asked Questions (FAQ)</a></p>
-        <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/support/">Contact Us</a></p>
+        <p class="description"><a target="_blank" href="https://wordpress.org/support/plugin/click-to-chat-for-whatsapp/#new-topic-0">Contact Us</a></p>
 
         <?php
 
@@ -362,7 +491,11 @@ class HT_CTC_Admin_Main_Page {
                     if ( function_exists('ht_ctc_wp_encode_emoji') ) {
                         $input[$key] = ht_ctc_wp_encode_emoji( $input[$key] );
                     }
-                    $new_input[$key] = sanitize_textarea_field( $input[$key] );
+                    if ( function_exists('sanitize_textarea_field') ) {
+                        $new_input[$key] = sanitize_textarea_field( $input[$key] );
+                    } else {
+                        $new_input[$key] = sanitize_text_field( $input[$key] );
+                    }
                 } elseif ( 'call_to_action' == $key ) {
                     if ( function_exists('ht_ctc_wp_encode_emoji') ) {
                         $input[$key] = ht_ctc_wp_encode_emoji( $input[$key] );

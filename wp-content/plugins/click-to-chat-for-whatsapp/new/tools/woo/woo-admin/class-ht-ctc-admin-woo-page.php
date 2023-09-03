@@ -271,8 +271,7 @@ class HT_CTC_Admin_Woo_Page {
             <div id="add_whatsapp_tab-1" class="col s12 md_tab">
                 <div class="ctc_md_tab">
                     <!-- Add button/icon -->
-
-                    <br>
+                    <p class="description" style="margin-bottom:15px;"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/add-whatsapp-in-woocommerce-single-product-pages/"><?php _e( 'Add WhatsApp in WooCommerce Single Product pages', 'click-to-chat-for-whatsapp' ); ?></a></p>
 
                     <div class="row">
                         <div class="col s6" style="padding-top: 14px;">
@@ -288,14 +287,7 @@ class HT_CTC_Admin_Woo_Page {
                                 }
                                 ?>
                             </select>
-                            <?php
-                            if ( ! defined( 'HT_CTC_PRO_VERSION' ) ) {
-                                ?>
-                                <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/add-whatsapp-in-woocommerce-single-product-pages/#pro_block">More Positions</a> (PRO)</p>
-                                <?php
-                            }
-                            ?>
-
+                            <!-- <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/add-whatsapp-in-woocommerce-single-product-pages/#pro_block">Positions</a></p> -->
                         </div>
                     </div>
 
@@ -390,8 +382,7 @@ class HT_CTC_Admin_Woo_Page {
                     </details>
                     
 
-                    <p class="description" style="margin-bottom:15px;"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/add-whatsapp-in-woocommerce-single-product-pages/"><?php _e( 'Add WhatsApp in WooCommerce Single Product pages', 'click-to-chat-for-whatsapp' ); ?></a></p>
-                    <br><br>
+                    
                 </div>
             </div>
 
@@ -560,7 +551,11 @@ class HT_CTC_Admin_Woo_Page {
             if( isset( $input[$key] ) ) {
 
                 if ( 'woo_pre_filled' == $key || 'woo_shop_pre_filled' == $key ) {
-                    $new_input[$key] = sanitize_textarea_field( $input[$key] );
+                    if ( function_exists('sanitize_textarea_field') ) {
+                        $new_input[$key] = sanitize_textarea_field( $input[$key] );
+                    } else {
+                        $new_input[$key] = sanitize_text_field( $input[$key] );
+                    }
                 } else if ( in_array( $key, $editor ) ) {
                     // editor
                     if ( !empty( $input[$key]) && '' !== $input[$key] && function_exists('ht_ctc_wp_sanitize_text_editor') ) {

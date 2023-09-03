@@ -30,10 +30,11 @@ class HT_CTC_Admin_Others {
     function admin_hooks() {
         
         // if its a click to chat admin page
-        add_action( 'load-toplevel_page_click-to-chat', array( $this, 'ctc_admin_pages') );
-        add_action( 'load-click-to-chat_page_click-to-chat-customize-styles', array( $this, 'ctc_admin_pages') );
-        add_action( 'load-click-to-chat_page_click-to-chat-other-settings', array( $this, 'ctc_admin_pages') );
-        add_action( 'load-click-to-chat_page_click-to-chat-woocommerce', array( $this, 'ctc_admin_pages') );
+        add_action( 'load-toplevel_page_click-to-chat', array( $this, 'load_ctc_admin_page') );
+        add_action( 'load-click-to-chat_page_click-to-chat-customize-styles', array( $this, 'load_ctc_admin_page') );
+        add_action( 'load-click-to-chat_page_click-to-chat-greetings', array( $this, 'load_ctc_admin_page') );
+        add_action( 'load-click-to-chat_page_click-to-chat-other-settings', array( $this, 'load_ctc_admin_page') );
+        add_action( 'load-click-to-chat_page_click-to-chat-woocommerce', array( $this, 'load_ctc_admin_page') );
         
         add_action( 'ht_ctc_ah_admin_scripts_start', [$this, 'dequeue'] );
         add_action( 'ht_ctc_ah_admin_scripts_start_woo_page', [$this, 'woo_dequeue'] );
@@ -55,7 +56,7 @@ class HT_CTC_Admin_Others {
 
 
     // its Click to Chat - admin page
-    function ctc_admin_pages() {
+    function load_ctc_admin_page() {
 
         do_action('ht_ctc_ah_admin_its_ctc_admin_page' );
 
@@ -74,21 +75,17 @@ class HT_CTC_Admin_Others {
             include_once HT_CTC_PLUGIN_DIR . '/new/admin/db/class-ht-ctc-db2.php';
         }
 
-
         // if need to run the updater backup
         $chat = get_option('ht_ctc_chat_options');
         if ( !isset($chat['display_mobile']) ) {
             include_once HT_CTC_PLUGIN_DIR . '/new/admin/db/class-ht-ctc-update-db-backup.php';
         }
 
-
-
-
     }
 
     /**
      * used to clear cache
-     * runs on all plugin admin pages (expect customize styles, greetings page where multiple register options(register_setting) are there)
+     * runs on all plugin admin pages (expect customize styles, greetings page where multiple register options(register_setting) are there - to avoid calling multiple time for single time save.)
      */
     function after_sanitize() {
 
@@ -400,7 +397,7 @@ class HT_CTC_Admin_Others {
 
     // clear cache after save settings.
     function clear_cache() {
-	
+
         // WP Super Cache
         if ( function_exists( 'wp_cache_clear_cache' ) ) {
             wp_cache_clear_cache();

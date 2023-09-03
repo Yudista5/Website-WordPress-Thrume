@@ -91,7 +91,7 @@ include_once HT_CTC_PLUGIN_DIR .'new/inc/assets/img/ht-ctc-svg-images.php';
 <?= $s7_hover_styles ?>
 </style>
 
-<div class="ctc_s_7_1 ctc-analytics" style="<?= $s7_n1_styles; ?>">
+<div class="ctc_s_7_1 ctc-analytics ctc_nb" style="<?= $s7_n1_styles; ?>" data-nb_top="-7.8px" data-nb_right="-7.8px">
     <p class="ctc_s_7_1_cta ctc-analytics ctc_cta <?= $s7_cta_class ?>" style="<?= $s7_cta_css ?>"><?= $call_to_action; ?></p>
     <div class="ctc_s_7_icon_padding ctc-analytics " style="<?= $s7_icon_padding_css ?>">
         <?= ht_ctc_singlecolor( $s7_svg_attrs ); ?>

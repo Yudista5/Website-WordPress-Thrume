@@ -26,13 +26,25 @@ class HT_CTC_Admin_Scripts {
     // Register css styles, javascript files only on 'click-to-chat' page
     function register_scripts_admin($hook) {
 
+        $os = get_option('ht_ctc_othersettings');
+
         // true/false
         $load_js_bottom = apply_filters( 'ht_ctc_fh_load_admin_js_bottom', true );
 
-        $admin_js = 'admin.js';
-        // $admin_js = '333.admin.js';
-
+        
+        $js = 'admin.js';
         $greetings_js = 'greetings.js';
+
+        $css = 'admin.css';
+        
+        if ( isset($os['debug_mode']) ) {
+            $js = 'dev/admin.dev.js';
+            $greetings_js = 'dev/greetings.dev.js';
+            
+            $css = 'dev/admin.dev.css';
+        }
+        
+        $md_css = 'materialize.min.css';
         
         // hook .. 
         if( 'toplevel_page_click-to-chat' == $hook || 'click-to-chat_page_click-to-chat-chat-feature' == $hook || 'click-to-chat_page_click-to-chat-group-feature' == $hook || 'click-to-chat_page_click-to-chat-share-feature' == $hook || 'click-to-chat_page_click-to-chat-customize-styles' == $hook || 'click-to-chat_page_click-to-chat-other-settings' == $hook || 'click-to-chat_page_click-to-chat-woocommerce' == $hook || 'click-to-chat_page_click-to-chat-greetings' == $hook ) {
@@ -45,8 +57,8 @@ class HT_CTC_Admin_Scripts {
             }
 
             wp_enqueue_style( 'wp-color-picker' );
-            wp_enqueue_style('ctc_admin_md_css', plugins_url( 'new/admin/admin_assets/css/materialize.min.css', HT_CTC_PLUGIN_FILE ) , '', HT_CTC_VERSION );
-            wp_enqueue_style('ctc_admin_css', plugins_url( 'new/admin/admin_assets/css/admin.css', HT_CTC_PLUGIN_FILE ) , '', HT_CTC_VERSION );
+            wp_enqueue_style('ctc_admin_md_css', plugins_url( "new/admin/admin_assets/css/$md_css", HT_CTC_PLUGIN_FILE ) , '', HT_CTC_VERSION );
+            wp_enqueue_style('ctc_admin_css', plugins_url( "new/admin/admin_assets/css/$css", HT_CTC_PLUGIN_FILE ) , '', HT_CTC_VERSION );
 
             wp_register_style('ctc_admin_intl_css', plugins_url( 'new/admin/admin_assets/intl/css/intlTelInput.min.css', HT_CTC_PLUGIN_FILE ) , '', HT_CTC_VERSION );
             wp_register_script( 'ctc_admin_intl_js', plugins_url( 'new/admin/admin_assets/intl/js/intlTelInput.min.js', HT_CTC_PLUGIN_FILE ), '', HT_CTC_VERSION, $load_js_bottom );
@@ -62,7 +74,7 @@ class HT_CTC_Admin_Scripts {
                 $ctc_admin_js_dependencies[] = 'ctc_admin_intl_js';
             }
 
-            wp_enqueue_script( 'ctc_admin_js', plugins_url( "new/admin/admin_assets/js/$admin_js", HT_CTC_PLUGIN_FILE ), $ctc_admin_js_dependencies, HT_CTC_VERSION, $load_js_bottom );
+            wp_enqueue_script( 'ctc_admin_js', plugins_url( "new/admin/admin_assets/js/$js", HT_CTC_PLUGIN_FILE ), $ctc_admin_js_dependencies, HT_CTC_VERSION, $load_js_bottom );
             
             wp_enqueue_script( 'ctc_admin_greetings_js', plugins_url( "new/admin/admin_assets/js/$greetings_js", HT_CTC_PLUGIN_FILE ), array( 'jquery', 'ctc_admin_js' ), HT_CTC_VERSION, $load_js_bottom );
 

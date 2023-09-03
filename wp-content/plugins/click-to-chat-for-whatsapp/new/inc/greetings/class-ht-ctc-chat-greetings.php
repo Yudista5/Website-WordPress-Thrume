@@ -161,41 +161,54 @@ class HT_CTC_Chat_Greetings {
             $ht_ctc_greetings['opt_in'] = str_replace( array('{url}', '{title}', '{site}' ),  array( $page_url, $post_title, HT_CTC_BLOG_NAME ), $ht_ctc_greetings['opt_in'] );
         }
 
-        $box_shadow = '1px 1px 3px 1px rgba(0,0,0,.14)';
+        $box_shadow = '0px 1px 9px 0px rgba(0,0,0,.14)';
         if ( 'greetings-2' == $ht_ctc_greetings['greetings_template'] ) {
             $box_shadow = '0px 0px 5px 1px rgba(0,0,0,.14)';
         }
 
+        /**
+         * greetings dialog size
+         * ctc_m_full_width: class to make mobile full width for medium and large
+         */
+        $g_size = ( isset($greetings_settings['g_size']) ) ? esc_attr( $greetings_settings['g_size'] ) : 's';
+
+        $min_width = '300px';
+        $ctc_m_full_width = '';
+        
+        if ('s' == $g_size) {
+        } else if ( 'm' == $g_size ) {
+            $min_width = '330px';
+            $ctc_m_full_width = 'ctc_m_full_width';
+        } else if ( 'l' == $g_size ) {
+            $min_width = '360px';
+            $ctc_m_full_width = 'ctc_m_full_width';
+        }
+        
+
         $g_box_classes = '';
+
+        $box_layout_bg_color = '';
+        if ( 'greetings-1' == $ht_ctc_greetings['greetings_template'] || 'greetings-2' == $ht_ctc_greetings['greetings_template'] ) {
+        } else {
+            $box_layout_bg_color = 'background-color: #ffffff;';
+        }
 
         if ( is_file( $ht_ctc_greetings['path'] ) ) {
 
             $template = $ht_ctc_greetings['greetings_template'];
             $g_box_classes = " template-$template";
-            
-            $script = '';
-            // $script = 'dev';
-            if('dev' == $script) {
-                ?>
-                <style>
-                .ht_ctc_chat_greetings_box *:not(ul):not(ol) {
-                    padding: 0px; margin: 0px;
-                }
-                .ht_ctc_chat_greetings_box ul, .ht_ctc_chat_greetings_box ol {
-                    margin-top: 0px; margin-bottom: 0px;
-                }
-                </style>
-                <?php
-            } else {
+
+            // safe side action(to avoid cache issue, i.e. if main.css is not loaded properly) - added to main.css - later can remove.
+            if ( 's' == $g_size ) {
                 ?>
                 <style>.ht_ctc_chat_greetings_box :not(ul):not(ol){padding:0;margin:0}.ht_ctc_chat_greetings_box ul,.ht_ctc_chat_greetings_box ol{margin-top:0;margin-bottom:0}</style>
                 <?php
             }
             ?>
             
-            <div style="position: relative; bottom: 18px; cursor: auto;" class="ht_ctc_greetings">
+            <div style="position: relative; bottom: 18px; cursor: auto;" class="ht_ctc_greetings <?= $ctc_m_full_width ?>">
 
-                <div class="ht_ctc_chat_greetings_box <?= $g_box_classes ?>" style="display: none; position: absolute; bottom: 0px; <?= $g_position_r_l ?>: 0px; min-width: 300px; max-width: 400px; ">
+                <div class="ht_ctc_chat_greetings_box <?= $g_box_classes ?>" style="display: none; position: absolute; bottom: 0px; <?= $g_position_r_l ?>: 0px; min-width: <?= $min_width ?>; max-width: 420px; ">
 
                     <span style=" cursor:pointer; float:<?= $g_position_r_l ?>;" class="ctc_greetings_close_btn">
                         <svg style="color:#ffffff; background-color:lightgray; border-radius:50%;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
@@ -203,7 +216,7 @@ class HT_CTC_Chat_Greetings {
                         </svg>
                     </span>
                     <br>
-                    <div class="ht_ctc_chat_greetings_box_layout" style="max-height: 67vh; overflow-y:auto; background-color: #ffffff; box-shadow: <?= $box_shadow ?>; border-radius:8px;clear:both;">
+                    <div class="ht_ctc_chat_greetings_box_layout" style="max-height: 84vh; overflow-y:auto; <?= $box_layout_bg_color ?> box-shadow: <?= $box_shadow ?>; border-radius:8px;clear:both;">
                         <div class="ctc_greetings_template">
                             <?php include $ht_ctc_greetings['path']; ?>
                         </div>

@@ -96,7 +96,7 @@ class HT_CTC_Admin_Other_Settings {
         ?>
         <h1>Other Settings</h1>
         <div class="ctc_admin_top_menu" style="float:right; margin:0px 18px;">
-            <a href="#ht_ctc_analytics">Analytics</a> | <a href="#ht_ctc_webhooks">Webhooks</a> | <a href="#url_structure">URL Structure</a>
+            <a href="#ht_ctc_analytics">Analytics</a> | <a href="#ht_ctc_webhooks">Webhooks</a>
         </div>
         <?php
         do_action('ht_ctc_ah_admin' );
@@ -201,23 +201,7 @@ class HT_CTC_Admin_Other_Settings {
 
         if ( ! defined( 'HT_CTC_PRO_VERSION' ) ) {
             ?>
-            <br>
-            <p class="description ht_ctc_subtitle">Google Ads Conversion - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/google-ads-conversion/">PRO</a></p>
-            <br>
-            <p class="description"><span class="ga_ads_display" style="font-size: 0.7em;">Call <span style="color: #039be5; cursor: pointer;">gtag_report_conversion</span> function - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/call-gtag_report_conversion-function/">more info</a></span></p>
-            <br>
-            <div class="ga_ads_checkbox" style="display:none;">
-                <p>
-                    <label>
-                        <input name="<?= $dbrow; ?>[ga_ads]" type="checkbox" value="1" <?php checked( $ga_ads_checkbox, 1 ); ?> id="ga_ads" />
-                        <span><?php _e( 'Google Ads Conversion', 'click-to-chat-for-whatsapp' ); ?> (<?php _e( 'call gtag_report_conversion function', 'click-to-chat-for-whatsapp' ); ?>)</span>
-                    </label>
-                </p>
-                <p class="description"><?php _e( 'call gtag_report_conversion function, when user clicks', 'click-to-chat-for-whatsapp' ); ?> - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/call-gtag_report_conversion-function/"><?php _e( 'more info', 'click-to-chat-for-whatsapp' ); ?></a> </p>
-                <!-- <p class="description">This feature requires to add JavaScript code on your website i.e. add gtag_report_conversion function</p> -->
-                <br>
-                <p class="description"><a href="https://holithemes.com/plugins/click-to-chat/google-ads-conversion/"><strong>PRO</strong></a>: Add Conversion ID, Conversion label direclty (no need to setup gtag_report_conversion function)</p>
-            </div>
+            <p class="description ht_ctc_subtitle"><?php _e( 'Google Ads Conversion', 'click-to-chat-for-whatsapp' ); ?> - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/google-ads-conversion/">PRO</a></p>
             <?php
         }
 
@@ -254,6 +238,26 @@ class HT_CTC_Admin_Other_Settings {
             </div>
         </div>
         
+        <?php
+        
+        if ( ! defined( 'HT_CTC_PRO_VERSION' ) ) {
+            ?>
+            <p class="description"><span class="ga_ads_display" style="font-size: 0.7em;">Call <span style="cursor:pointer; border-bottom: 1px dotted;">gtag_report_conversion</span></span></p>
+            <div class="ga_ads_checkbox" style="display:none; margin: 20px 0px 0px 20px;">
+                <p class="description">This feature requires to add JavaScript code on your website i.e. add gtag_report_conversion function</p>
+                <p>
+                    <label>
+                        <input name="<?= $dbrow; ?>[ga_ads]" type="checkbox" value="1" <?php checked( $ga_ads_checkbox, 1 ); ?> id="ga_ads" />
+                        <span><?php _e( 'call gtag_report_conversion function', 'click-to-chat-for-whatsapp' ); ?></span>
+                    </label>
+                </p>
+                <p class="description"><?php _e( 'call gtag_report_conversion function, when user clicks', 'click-to-chat-for-whatsapp' ); ?> - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/call-gtag_report_conversion-function/"><?php _e( 'more info', 'click-to-chat-for-whatsapp' ); ?></a> </p>
+                <br>
+                <p class="description"><a href="https://holithemes.com/plugins/click-to-chat/google-ads-conversion/"><strong>PRO</strong></a>: Add Conversion ID, Conversion label direclty (no need to setup gtag_report_conversion function)</p>
+            </div>
+            <?php
+        }
+        ?>
 
         </div>
         </li>
@@ -282,7 +286,7 @@ class HT_CTC_Admin_Other_Settings {
             <div class="input-field col s12">
                 <input name="<?= $dbrow; ?>[hook_url]" value="<?= $hook_url ?>" id="hook_url" type="text" class="input-margin">
                 <label for="hook_url"><?php _e( 'Webhook URL', 'click-to-chat-for-whatsapp' ); ?></label>
-                <p class="description"><?php _e( 'Calls this webhook url after user clicks on WhatsApp Icon/Image', 'click-to-chat-for-whatsapp' ); ?> - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/webhooks/"><?php _e( 'more info', 'click-to-chat-for-whatsapp' ); ?></a> </p>
+                <p class="description"><?php _e( 'Calls this webhook url after user clicks on WhatsApp Icon/Button', 'click-to-chat-for-whatsapp' ); ?></p>
             </div>
         </div>
 
@@ -300,29 +304,33 @@ class HT_CTC_Admin_Other_Settings {
                 if ( is_array($hook_v) ) {
                     $hook_v = array_filter($hook_v);
                     $hook_v = array_values($hook_v);
+                    $hook_v = array_map('esc_attr', $hook_v );
                     $count = count($hook_v);
+
+                    // hook values
+                    if ( isset( $hook_v[0] ) ) {
+                        for ($i=0; $i < $count ; $i++) {
+                            $dbrow = "ht_ctc_othersettings[hook_v][$i]";
+                            $num = $hook_v[$i];
+                            ?>
+                            <div class="additional-value row" style="margin-bottom: 15px;">
+                                <div class="col s3">
+                                    <p class="description handle">Value<?= $i+1; ?></p>
+                                </div>
+                                <div class="col s9 m6">
+                                    <p style="display: flex;">
+                                        <input name="<?= $dbrow; ?>" value="<?= $num; ?>" type="text"/>
+                                        <span style="color:lightgrey; cursor:pointer;" class="hook_remove_value dashicons dashicons-no-alt"></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php
+                        }
+                    }
+                    
                 }
 
-                // hook values
-                if ( isset( $hook_v[0] ) ) {
-                    for ($i=0; $i < $count ; $i++) {
-                        $dbrow = "ht_ctc_othersettings[hook_v][$i]";
-                        $num = $hook_v[$i];
-                        ?>
-                        <div class="additional-value row" style="margin-bottom: 15px;">
-                            <div class="col s3">
-                                <p class="description handle">Value<?= $i+1; ?></p>
-                            </div>
-                            <div class="col s9 m6">
-                                <p style="display: flex;">
-                                    <input name="<?= $dbrow; ?>" value="<?= $num; ?>" type="text"/>
-                                    <span style="color:lightgrey; cursor:pointer;" class="hook_remove_value dashicons dashicons-no-alt"></span>
-                                </p>
-                            </div>
-                        </div>
-                        <?php
-                    }
-                }
+                
                 
                 ?>
             </div>
@@ -336,7 +344,7 @@ class HT_CTC_Admin_Other_Settings {
         <?php
         if ( ! defined( 'HT_CTC_PRO_VERSION' ) ) {
             ?>
-            <p class="description">Webhook Dynamic Varibales - {number}, {url}, {time} - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/pricing/">PRO</a></p>
+            <p class="description">Webhook Dynamic Variables - {number}, {url}, {time} - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/webhooks/#pro">PRO</a></p>
             <?php
         }
         ?>
@@ -350,8 +358,12 @@ class HT_CTC_Admin_Other_Settings {
 
     // animations
     function ht_ctc_animations_cb() {
+
         $options = get_option('ht_ctc_othersettings');
         $dbrow = 'ht_ctc_othersettings';
+
+        $greetings = get_option('ht_ctc_greetings_options');
+        $greetings_settings = get_option('ht_ctc_greetings_settings');
 
         $show_effect = ( isset( $options['show_effect']) ) ? esc_attr( $options['show_effect'] ) : 'no-show-effects';
         $an_delay = ( isset( $options['an_delay']) ) ? esc_attr( $options['an_delay'] ) : '';
@@ -387,9 +399,7 @@ class HT_CTC_Admin_Other_Settings {
         <div class="collapsible-header"><?php _e( 'Animations', 'click-to-chat-for-whatsapp' ); ?></div>
         <div class="collapsible-body">
 
-        <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/animations/"><?php _e( 'Animations', 'click-to-chat-for-whatsapp' ); ?></a></p>
-        <br><br><br>
-
+        <p class="description" style="margin-bottom:25px;"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/animations/"><?php _e( 'Animations', 'click-to-chat-for-whatsapp' ); ?></a></p>
 
         <!-- animation on load -->
         <div class="row">
@@ -462,6 +472,109 @@ class HT_CTC_Admin_Other_Settings {
         </div>
         </li>
         </ul>
+
+
+        <?php
+        // notification Badge
+
+        $notification_badge = (isset($options['notification_badge'])) ? 1 : '';
+        $notification_count = ( isset( $options['notification_count']) ) ? esc_attr( $options['notification_count'] ) : '1';
+        $notification_bg_color = (isset($options['notification_bg_color'])) ? esc_attr($options['notification_bg_color']) : '#ff4c4c';
+        $notification_text_color = (isset($options['notification_text_color'])) ? esc_attr($options['notification_text_color']) : '#ffffff';
+        $notification_border_color = (isset($options['notification_border_color'])) ? esc_attr($options['notification_border_color']) : '';
+        $notification_time = (isset($options['notification_time'])) ? esc_attr($options['notification_time']) : '';
+        ?>
+
+        <ul class="collapsible ht_ctc_notification" data-collapsible="accordion" style="margin-top: 2rem;">
+        <li class="">
+        <div class="collapsible-header"><?php _e( 'Notification Badge', 'click-to-chat-for-whatsapp' ); ?></div>
+        <div class="collapsible-body">
+        <p class="description" style="margin-bottom:25px;"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/notification-badge/"><?php _e( 'Notification Badge', 'click-to-chat-for-whatsapp' ); ?></a></p>
+
+        <!-- notification_badge -->
+        <div class="row">
+            <div class="col s6">
+                <p><?php _e( 'Add Notification Badge', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="col s6">
+                <label>
+                    <input class="notification_field" name="<?php echo $dbrow ?>[notification_badge]" type="checkbox" value="1" <?php checked( $notification_badge, 1 ); ?> id="notification_badge" />
+                    <span><?php _e( 'Add Notification Badge', 'click-to-chat-for-whatsapp' ); ?></span>
+                </label>
+                <br>
+            </div>
+        </div>
+
+        <!-- notification_count -->
+        <div class="row notification_settings notification_count">
+            <div class="col s6">
+                <p><?php _e( 'Notification Count', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <input name="<?= $dbrow; ?>[notification_count]" value="<?= $notification_count ?>" id="notification_count" type="number" min="0" class="notification_field" >
+                <label for="notification_count"><?php _e( 'Notification Count', 'click-to-chat-for-whatsapp' ); ?></label>
+            </div>
+        </div>
+
+        <!-- notification_bg_color -->
+        <div class="row notification_settings notification_bg_color">
+            <div class="col s6">
+                <p><?php _e( 'Badge Background Color', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <input class="ht-ctc-color" name="<?= $dbrow; ?>[notification_bg_color]" data-default-color="#ff4c4c" value="<?= $notification_bg_color ?>" type="text">
+            </div>
+        </div>
+
+        <!-- notification_text_color -->
+        <div class="row notification_settings notification_text_color">
+            <div class="col s6">
+                <p><?php _e( 'Text Color', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <input class="ht-ctc-color" name="<?= $dbrow; ?>[notification_text_color]" data-default-color="#ffffff" value="<?= $notification_text_color ?>" type="text">
+            </div>
+        </div>
+
+        <!-- notification_border_color -->
+        <div class="row notification_settings notification_border_color">
+            <div class="col s6">
+                <p><?php _e( 'Add border Color', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <input class="ht-ctc-color" name="<?= $dbrow; ?>[notification_border_color]" value="<?= $notification_border_color ?>" type="text">
+            </div>
+        </div>
+
+        <!-- notification_time -->
+        <div class="row notification_settings notification_time">
+            <div class="col s6">
+                <p><?php _e( 'Badge Time Delay', 'click-to-chat-for-whatsapp' ); ?></p>
+            </div>
+            <div class="input-field col s6">
+                <input name="<?= $dbrow; ?>[notification_time]" value="<?= $notification_time ?>" id="notification_time" type="number" min="0" class="notification_field" >
+                <label for="notification_time"><?php _e( 'Time in seconds', 'click-to-chat-for-whatsapp' ); ?></label>
+            </div>
+        </div>
+
+        <div class="row notification_settings">
+            <p class="descripton" style="font-style=italic;">Notification badge will display until the first time user clicks to open chat or the greetings dialog.</p>
+            <?php
+            $greetings_template = ( isset( $greetings['greetings_template']) ) ? esc_attr( $greetings['greetings_template'] ) : '';
+            $g_init = isset($greetings_settings['g_init']) ? esc_attr( $greetings_settings['g_init'] ) : '';
+            if ( ('' !== $greetings_template || 'no' !== $greetings_template) && 'open' == $g_init) {
+                $greetings_page_url = admin_url( 'admin.php?page=click-to-chat-greetings' );
+                ?>
+                <p class="description" style="color:#ff4c4c;">If the <a href="<?= $greetings_page_url . '#g_init:~:text=initial%20stage' ?>" target="_blank">Greetings dialog initial stage is open</a>, the notification badge maynot be displayed.</p>
+                <?php
+            }
+            ?>
+        </div>
+
+        </div>
+        </li>
+        </ul>
+
         <?php
     }
 
@@ -483,100 +596,8 @@ class HT_CTC_Admin_Other_Settings {
 
         $li_active_gr_sh = ( isset( $options['enable_group'] ) || isset( $options['enable_share'] ) ) ? "class='active'" : '';
 
-        // url strucutre
-        $url_target_d = ( isset( $options['url_target_d']) ) ? esc_attr( $options['url_target_d'] ) :'_blank';
-        $url_structure_d = ( isset( $options['url_structure_d']) ) ? esc_attr( $options['url_structure_d'] ) :'';
-        $url_structure_m = ( isset( $options['url_structure_m']) ) ? esc_attr( $options['url_structure_m'] ) :'';
-
-        /**
-         * web whatsapp - deskop - if new settings not updated, based on settings set before 3.12
-         * url_structure_d = '' (blank means user not updated new settings) 
-         * isset( $chat_options['webandapi'] )- existing user no need to check this new settings and update the page. no issue.
-         */
-        if ( '' == $url_structure_d && isset( $chat_options['webandapi'] ) ) {
-            $url_structure_d = 'web';
-        }
-        
-        $url_structure_d_list = array(
-            'default' => '(' . __( 'Default', 'click-to-chat-for-whatsapp') .') wa.me',
-            'web' => 'Web WhatsApp'
-        );
-        
-        $url_structure_m_list = array(
-            'default' => '(' . __( 'Default', 'click-to-chat-for-whatsapp') .') wa.me',
-            'wa_colon' => 'WhatsApp://'
-        );
-
-        $url_structure_d_list = apply_filters( 'ht_ctc_fh_url_structure_d_list', $url_structure_d_list );
-        $url_structure_m_list = apply_filters( 'ht_ctc_fh_url_structure_m_list', $url_structure_m_list );
         ?>
 
-        <ul class="collapsible url_structure" id="url_structure">
-        <li class="">
-        <div class="collapsible-header" id="showhide_settings"><?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></div>
-        <div class="collapsible-body">
-
-        <p class="description ht_ctc_subtitle" style="margin-bottom: 11px;"><?php _e( 'Desktop', 'click-to-chat-for-whatsapp' ); ?>:</p>
-        <div class="row">
-            <div class="col s6">
-                <p><?php _e( 'Open links in', 'click-to-chat-for-whatsapp' ); ?></p>
-            </div>
-            <div class="input-field col s6">
-                <select name="<?= $dbrow; ?>[url_target_d]" class="url_target_d">
-                    <option value="_blank" <?= $url_target_d == '_blank' ? 'SELECTED' : ''; ?> ><?php _e( 'New Tab', 'click-to-chat-for-whatsapp' ); ?></option>
-                    <option value="popup" <?= $url_target_d == 'popup' ? 'SELECTED' : ''; ?> ><?php _e( 'Pop-up', 'click-to-chat-for-whatsapp' ); ?></option>
-                    <option value="_self" <?= $url_target_d == '_self' ? 'SELECTED' : ''; ?> ><?php _e( 'Same Tab', 'click-to-chat-for-whatsapp' ); ?></option>
-                </select>
-                <label><?php _e( 'Open links in', 'click-to-chat-for-whatsapp' ); ?></label>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col s6">
-                <p><?php _e( 'Desktop', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></p>
-            </div>
-            <div class="input-field col s6">
-                <select name="<?= $dbrow; ?>[url_structure_d]" class="url_structure_d">
-                    <?php 
-                    foreach ( $url_structure_d_list as $key => $value ) {
-                    ?>
-                    <option value="<?= $key ?>" <?= $url_structure_d == $key ? 'SELECTED' : ''; ?> ><?= $value ?></option>
-                    <?php
-                    }
-                    ?>
-                </select>
-                <label><?php _e( 'Desktop', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></label>
-            </div>
-        </div>
-
-        <?php do_action('ht_ctc_ah_url_structure_desktop'); ?>
-        
-        <p class="description ht_ctc_subtitle" style="margin-bottom: 11px;"><?php _e( 'Mobile', 'click-to-chat-for-whatsapp' ); ?>:</p>
-        <div class="row">
-            <div class="col s6">
-                <p><?php _e( 'Mobile', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></p>
-            </div>
-            <div class="input-field col s6">
-                <select name="<?= $dbrow; ?>[url_structure_m]" class="url_structure_m">
-                    <?php 
-                    foreach ( $url_structure_m_list as $key => $value ) {
-                    ?>
-                    <option value="<?= $key ?>" <?= $url_structure_m == $key ? 'SELECTED' : ''; ?> ><?= $value ?></option>
-                    <?php
-                    }
-                    ?>
-                </select>
-                <label><?php _e( 'Mobile', 'click-to-chat-for-whatsapp' ); ?>: <?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></label>
-            </div>
-        </div>
-
-        <?php do_action('ht_ctc_ah_url_structure_mobile'); ?>
-
-        <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/url-structure/"><?php _e( 'URL Structure', 'click-to-chat-for-whatsapp' ); ?></a> </p>
-        </div>
-        </li>
-        </ul>
-        <br>
 
         <p class="description"><?php _e( 'All these below settings are not important to everyone', 'click-to-chat-for-whatsapp' ); ?></p>
         <ul class="collapsible ht_ctc_other_settings" data-collapsible="accordion" id="ht_ctc_othersettings">
@@ -637,7 +658,7 @@ class HT_CTC_Admin_Other_Settings {
                     ?>
                 </select>
                 <label>Webhook data format</label>
-                <p class="description">Stringify JSON works. If any application need to change - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/webhook-data-format/" style="color: unset">more info</a></p>
+                <p class="description">Stringify JSON works. If any application need to change - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/webhook-data-format/">more info</a></p>
             </div>
         </div>
 
@@ -801,8 +822,8 @@ class HT_CTC_Admin_Other_Settings {
         <!-- <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/link/">Basic Troubleshooting</a></p> -->
         <br>
         <hr>
-        <details open>
-            <summary style="cursor:pointer; margin-bottom: 5px;" class="description">Advanced settings (Developers)</summary>
+        <details>
+            <summary style="cursor:pointer; margin-bottom: 5px;" class="description">Chat load hook</summary>
 
             <br>
             <!-- chat load hook -->
@@ -817,6 +838,20 @@ class HT_CTC_Admin_Other_Settings {
                     <p class="description">If the chat widget is not working with the wp_footer hook, change to get_footer or wp_head - <a target="_blank" href="https://holithemes.com/plugins/click-to-chat/chat-load-hook/">more info</a></p>
                 </div>
             </div>
+        </details>
+
+        <?php
+        $no_intl_checkbox = ( isset( $options['no-intl']) ) ? esc_attr( $options['no-intl'] ) : '';
+        ?>
+        <details>
+            <summary style="cursor:pointer;" class="description">WhatsApp number not saving</summary>
+            <p class="description">If WhatsApp number is not saved at admin side, disable the initl input library and add WhatsApp number</p>
+            <p style="margin-bottom:12px;">
+                <label>
+                    <input name="<?= $dbrow; ?>[no-intl]" type="checkbox" value="1" <?php checked( $no_intl_checkbox, 1 ); ?> id="no-intl" />
+                    <span>Disable Initl input library</span>
+                </label>
+            </p>
         </details>
 
         <details>
@@ -875,7 +910,11 @@ class HT_CTC_Admin_Other_Settings {
         foreach ($input as $key => $value) {
 
             if ( 'placeholder' == $key ) {
-                $new_input[$key] = sanitize_textarea_field( $input[$key] );
+                if ( function_exists('sanitize_textarea_field') ) {
+                    $new_input[$key] = sanitize_textarea_field( $input[$key] );
+                } else {
+                    $new_input[$key] = sanitize_text_field( $input[$key] );
+                }
             } elseif ( 'hook_v' == $key ) {
                 $new_input[$key] = array_map( 'sanitize_text_field', $input[$key] );
             } elseif ( isset( $input[$key] ) ) {

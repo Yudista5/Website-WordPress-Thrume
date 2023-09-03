@@ -5,7 +5,7 @@
     $(function () {
 
         // variables
-        var v = '3.19';
+        var v = '3.26';
         var url = window.location.href;
         var post_title = (typeof document.title !== "undefined") ? document.title : '';
         // is_mobile yes/no,  desktop > 1024 
@@ -224,6 +224,9 @@
          */
         function greetings_open(message = 'open') {
             console.log('open');
+            
+            stop_notification_badge();
+
             $('.ctc_cta_stick').remove();
             $('.ht_ctc_chat_greetings_box').show(70);
             $('.ht_ctc_chat_greetings_box').addClass('ctc_greetings_opened').removeClass('ctc_greetings_closed');
@@ -294,8 +297,47 @@
             }
 
             greetings_display();
+            display_notifications();
 
             ht_ctc_things(p);
+        }
+
+
+        // ht_ctc_notification
+        function display_notifications() {
+            console.log('display_notifications');
+            if (document.querySelector('.ht_ctc_notification') && 'stop' !== ctc_getItem('n_badge')) {
+                
+                if (document.querySelector('.ctc_nb')) {
+                    console.log('overwrite top, right');
+                    // get parent of badge and then get top, right with in that element. (to avoid conflict with other styles if added using shortcode or so...)
+                    var main = $('.ht_ctc_badge').closest('.ht_ctc_style');
+
+                    $('.ht_ctc_badge').css({
+                        // overwrite top, right. if undefined or false then use default(as it can't overwrite at broswer).
+                        "top": $(main).find('.ctc_nb').attr('data-nb_top'),
+                        "right": $(main).find('.ctc_nb').attr('data-nb_right')
+                    });
+                }
+                
+
+                var n_time = (ctc.n_time) ? ctc.n_time*1000 : '150'
+                setTimeout(() => {
+                    console.log('display_notifications: show');
+                    $('.ht_ctc_notification').show(400);
+                }, n_time);
+
+            }
+        }
+
+        // after user clicks to chat or open greetings
+        function stop_notification_badge() {
+            console.log('stop _notification _badge');
+            if (document.querySelector('.ht_ctc_notification')) {
+                console.log('stop _notification _badge in if');
+                ctc_setItem('n_badge', 'stop');
+                $('.ht_ctc_notification').remove();
+            }
         }
 
         // animiation, cta hover effect
@@ -453,11 +495,17 @@
                 pre_filled = values.getAttribute('data-pre_filled');
             }
 
-            pre_filled = pre_filled.replaceAll('%', '%25');
-            pre_filled = pre_filled.replace(/\[url]/gi, url);
+            /**
+             * safari 13.. before replaceAll not supports..
+             */
+            try {
+                pre_filled = pre_filled.replaceAll('%', '%25');
+                
+                pre_filled = pre_filled.replace(/\[url]/gi, url);
 
-            // pre_filled = encodeURIComponent(pre_filled);
-            pre_filled = encodeURIComponent(decodeURI(pre_filled));
+                // pre_filled = encodeURIComponent(pre_filled);
+                pre_filled = encodeURIComponent(decodeURI(pre_filled));
+            } catch (e) {}
 
             if ('' == number) {
                 console.log('no number');
@@ -482,10 +530,10 @@
                     // for whatsapp://.. url open target is _self.
                     url_target = '_self';
                 }
-                // custom url mobile
-                if (ctc.custom_link_m && '' !== ctc.custom_link_m) {
+                // mobile: own url
+                if (ctc.custom_url_m && '' !== ctc.custom_url_m) {
                     console.log('custom link');
-                    base_url = ctc.custom_link_m;
+                    base_url = ctc.custom_url_m;
                 }
 
             } else {
@@ -497,10 +545,10 @@
                     base_url = 'https://web.whatsapp.com/send' + '?phone=' + number + '&text=' + pre_filled;
                 }
 
-                // custom url desktop
-                if (ctc.custom_link_d && '' !== ctc.custom_link_d) {
+                // desktop: own url
+                if (ctc.custom_url_d && '' !== ctc.custom_url_d) {
                     console.log('custom link');
-                    base_url = ctc.custom_link_d;
+                    base_url = ctc.custom_url_d;
                 }
             }
 
@@ -569,6 +617,8 @@
             // hook
             hook(number);
 
+            stop_notification_badge();
+
         }
 
         // shortcode
@@ -618,6 +668,9 @@
         }
 
 
+        // hook related values..
+        var g_hook_v = (ctc.hook_v) ? ctc.hook_v : '';
+
         // webhooks
         function hook(number) {
 
@@ -625,32 +678,41 @@
 
             if (ctc.hook_url) {
 
-                var h_url = ctc.hook_url;
-
-                console.log(h_url);
-
                 var hook_values = {};
 
                 // hook values
                 if (ctc.hook_v) {
 
-                    var hook_values = ctc.hook_v;
+                    hook_values = (typeof g_hook_v !== "undefined") ? g_hook_v : ctc.hook_v;
+                    // var hook_values = ctc.hook_v;
 
                     console.log(typeof hook_values);
                     console.log(hook_values);
 
-                }
+                    var pair_values = {};
+                    var i = 1;
 
-                console.log(h_url);
-                console.log(hook_values);
+                    hook_values.forEach(e => {
+                        console.log(i);
+                        console.log(e);
+                        pair_values['value' + i] = e;
+                        i++;
+                    });
+
+                    console.log(typeof pair_values);
+                    console.log(pair_values);
+
+                    ctc.hook_v = pair_values;
+                }
 
                 document.dispatchEvent(
                     new CustomEvent("ht_ctc_event_hook", { detail: { ctc, number } })
                 );
-                h_url = ctc.hook_url;
-                console.log(h_url);
 
+                var h_url = ctc.hook_url;
                 hook_values = ctc.hook_v;
+                
+                console.log(h_url);
                 console.log(hook_values);
 
                 if (ctc.webhook_format && 'json' == ctc.webhook_format) {
@@ -675,19 +737,6 @@
                         console.log(response);
                     }
                 });
-
-                // fetch(h_url, {
-                //     method: 'POST',
-                //     mode: 'no-cors',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify(data),
-                // }).then(response => {
-                //     console.log(response);
-                // }).catch(e => {
-                //     console.log(e.message);
-                // });
 
             }
 

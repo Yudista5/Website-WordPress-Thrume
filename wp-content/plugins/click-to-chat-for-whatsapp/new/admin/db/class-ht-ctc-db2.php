@@ -8,7 +8,7 @@
  * @package ctc
  * @since 2.0
  * @from class-ht-ctc-register.php -> version_changed() - when version changes
- * @from class-ht-ctc-admin-hooks.php -> ctc_admin_pages() - calls for ctc admin pages
+ * @from class-ht-ctc-admin-hooks.php -> load_ctc_admin_page() - calls for ctc admin pages
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;

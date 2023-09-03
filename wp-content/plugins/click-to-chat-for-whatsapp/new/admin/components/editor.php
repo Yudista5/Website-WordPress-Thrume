@@ -98,6 +98,7 @@ $args = [
     'tinymce'       => array(
         'textarea_rows'=> 10,
         'fontsize_formats' => "6px 8px 10px 12px 13px 14px 15px 16px 18px 20px 24px 28px 32px 36px",
+        'wordpress_adv_hidden' => false,
     )
     ];
 

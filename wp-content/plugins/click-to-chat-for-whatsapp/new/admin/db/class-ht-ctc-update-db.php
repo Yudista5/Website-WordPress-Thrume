@@ -50,6 +50,13 @@ class HT_CTC_Update_DB {
                 $this->v3_3_5_update();
             }
 
+            /**
+             * v3.23: if not yet updated to v3.23 or above  (in v3 $ht_ctc_plugin_details['v3'] is not added)
+             */
+            if ( ! isset( $ht_ctc_plugin_details['v3_23'] ) ) {
+                $this->v3_23_update();
+            }
+
 
         }
 
@@ -62,6 +69,60 @@ class HT_CTC_Update_DB {
      */
 
     
+
+    /**
+     * updating to v3.23 or above
+     * 
+     * from main settings page web whatsapp checkbox feature is moved to other_setting - url_structure feature 3.12. 
+     * And now in 3.23 url_structure is moving to main settings.
+     * 
+     * at 3.12 web whatsapp migration is not done from db. instead checking both values.
+     * now in 3.23 updating the database comptibile with web whatsapp and url structure.
+     * 
+     * url_structure_d - web / default(wa.me)  / custom_url
+     * 
+     * @note: merge this function in the next db update. as only one value..
+     *      @imp - if merging - here 'return' is used if not set. need to update this.. 
+     */
+    public function v3_23_update() {
+
+        $options = get_option('ht_ctc_chat_options');
+        $os = get_option('ht_ctc_othersettings');
+
+        if ( !isset($os['url_structure_d']) && !isset($options['webandapi']) ) {
+            return;
+        }
+
+        $n = array();
+        $n['not_empty'] = '1';
+
+        // desktop target
+        if ( isset($os['url_target_d']) ) {
+            $n['url_target_d'] = esc_attr( $os['url_target_d'] );
+        }
+
+        // destop structure
+        if ( isset($options['webandapi']) ) {
+            $n['url_structure_d'] = 'web';
+        }
+
+        if ( isset($os['url_structure_d']) ) {
+            $n['url_structure_d'] = esc_attr( $os['url_structure_d'] );
+        }
+
+        // mobile structure
+        if ( isset($os['url_structure_m']) ) {
+            $n['url_structure_m'] = esc_attr( $os['url_structure_m'] );
+        }
+        
+        $chat = get_option( 'ht_ctc_chat_options', array() );
+        $chat = (is_array( $chat)) ? $chat : [];
+        $update_chat = array_merge($n, $chat);
+        update_option('ht_ctc_chat_options', $update_chat);
+
+    }
+
+
 
     /**
      * updating to v3.3.3 or above

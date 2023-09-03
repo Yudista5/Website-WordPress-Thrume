@@ -135,7 +135,7 @@ class HT_CTC_Admin_Greetings {
                         'db' => 'header_content',
                         'template' => 'editor',
                         'label' => 'Header Content',
-                        'description' => '',
+                        'description' => 'Customize the font to improve the appearance (font size, color, etc.)',
                         'link_url' => '',
                         'link_title' => 'more info',
                         'parent_style' => "margin-bottom: 30px;",
@@ -210,6 +210,13 @@ class HT_CTC_Admin_Greetings {
                         'default_color' => '#dcf8c6',
                         'description' => 'Main Content as a Message Box with Background Color',
                         'parent_class' => 'pr_g1_message_box_bg_color',
+                    ],
+                    [
+                        'title' => __( 'Background image', 'click-to-chat-for-whatsapp'),
+                        'db' => 'main_bg_image',
+                        'template' => 'checkbox',
+                        'description' => 'Add WhatsApp like Background image to main content. ',
+                        'parent_class' => 'pr_main_bg_image',
                     ],
                     [
                         'title' => __( 'Call to Action - button type', 'click-to-chat-for-whatsapp'),
@@ -310,14 +317,25 @@ class HT_CTC_Admin_Greetings {
                         'parent_class' => 'pr_g_device',
                     ],
                     [
+                        'title' => __( 'Greetings dialog Size', 'click-to-chat-for-whatsapp'),
+                        'db' => 'g_size',
+                        'template' => 'select',
+                        'list' => [
+                            's' => 'Small',
+                            'm' => 'Desktop: Medium, Mobile: Full width',
+                            'l' => 'Desktop: Large, Mobile: Full width',
+                        ]
+                    ],
+                    [
                         'title' => __( 'Initial stage', 'click-to-chat-for-whatsapp'),
                         'db' => 'g_init',
                         'template' => 'select',
-                        'description' => "Open: Displays by default until user closes the first time <br>(Once user closes the Greetings Dialog on any page, greetings dialog won't display until user clicks to open again) <br> Close: Hidden by default and displays when user clicks - <a target='_blank' href='https://holithemes.com/plugins/click-to-chat/greetings-actions/'>more info</a>",
+                        'description' => "Open: Displays by default until the user closes the greetings for the first time <br>(Once user closes the Greetings Dialog on any page, the greetings dialog won't display until user clicks to open it again or used Greetings Actions) <br> Close: Hidden by default and displays when user clicks - <a target='_blank' href='https://holithemes.com/plugins/click-to-chat/greetings-initial-stage'>more info</a>",
                         'list' => [
                             'open' => 'Open',
                             'close' => 'Close',
                         ],
+                        'parent_id' => 'g_init',
                         'parent_class' => 'pr_g_init',
                     ],
                 ]
@@ -427,7 +445,7 @@ class HT_CTC_Admin_Greetings {
                                             <div class="collapsible-header"><?php _e( 'PRO', 'click-to-chat-for-whatsapp' ); ?></div>	
                                             <div class="collapsible-body">
                                                 <p class="description">Greetings - Form filling</p>
-                                                <p class="description">Greetings - Multi Agent</p>
+                                                <p class="description">Greetings - Multi-Agent</p>
                                                 <p class="description">&emsp;with different time ranges</p>
                                                 <p class="description">&emsp;Hide or display agent with next available time</p>
                                                 <p class="description">Actions: Time, Scroll, Viewport</p>
@@ -534,7 +552,7 @@ class HT_CTC_Admin_Greetings {
                 <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-actions/">Actions</a>: Time, Scroll, Click, Viewport</p>
                 <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-form/">Greetings Form</a>: Form filling before initiating the chat</p>
                 <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/multi-agent/">Multi Agent</a>: Display Multiple agent with different time ranges</p>
-                <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/change-values-at-page-level/#greetings">Greetings Page level settings</a>: Change Greetings content for any post</p>
+                <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/greetings-page-level-settings/">Greetings Page level settings</a>: Change Greetings content for any post</p>
                 <br>
                 <p class="description"><a href="https://holithemes.com/plugins/click-to-chat/pricing/">PRO Version</a></p>
                 <?php
@@ -584,7 +602,11 @@ class HT_CTC_Admin_Greetings {
             if( isset( $input[$key] ) ) {
 
                 if ( is_array( $input[$key] ) ) {
-                    $new_input[$key] = map_deep( $input[$key], 'sanitize_textarea_field' );
+                    if ( function_exists('sanitize_textarea_field') ) {
+                        $new_input[$key] = map_deep( $input[$key], 'sanitize_textarea_field' );
+                    } else {
+                        $new_input[$key] = map_deep( $input[$key], 'sanitize_text_field' );
+                    }
                 } else {
                     if ( in_array( $key, $editor ) ) {
                         // editor
@@ -599,8 +621,11 @@ class HT_CTC_Admin_Greetings {
                         if ( function_exists('ht_ctc_wp_encode_emoji') ) {
                             $input[$key] = ht_ctc_wp_encode_emoji( $input[$key] );
                         }
-                        $new_input[$key] = sanitize_textarea_field( $input[$key] );
-                        
+                        if ( function_exists('sanitize_textarea_field') ) {
+                            $new_input[$key] = sanitize_textarea_field( $input[$key] );
+                        } else {
+                            $new_input[$key] = sanitize_text_field( $input[$key] );
+                        }
                     } else {
                         $new_input[$key] = sanitize_text_field( $input[$key] );
                     }

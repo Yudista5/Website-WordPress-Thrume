@@ -221,9 +221,9 @@ class HT_CTC_Admin_Customize_Styles {
                     <input name="<?= $dbrow; ?>[display_allstyles]" type="checkbox" value="1" <?php checked( $display_allstyles, 1 ); ?> id="display_allstyles" />
                     <span><?php _e( 'Display all Styles', 'click-to-chat-for-whatsapp' ); ?></span>
                 </label>
-            </p>
+                <p class="display_allstyles_description description" style="display: none;">&emsp;&emsp;Save Changes</p>
+            </p> 
         </div>
-
         <?php
     }
 

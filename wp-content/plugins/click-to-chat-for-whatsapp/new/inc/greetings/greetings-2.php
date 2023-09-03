@@ -21,11 +21,12 @@ $bottom_css = 'padding: 2px 20px 2px 20px;text-align:center; font-size:12px;';
 
 $bg_color = ( isset($g2_options['bg_color']) ) ? esc_attr( $g2_options['bg_color'] ) : '';
 
-if ('' !== $bg_color) {
-    $main_css .= "background-color:$bg_color;";
-    $bottom_css .= "background-color:$bg_color;";
-    $send_css .= "background-color:$bg_color;";
+if ('' == $bg_color) {
+    $bg_color = '#ffffff';
 }
+$main_css .= "background-color:$bg_color;";
+$bottom_css .= "background-color:$bg_color;";
+$send_css .= "background-color:$bg_color;";
 
 
 // call to action - style

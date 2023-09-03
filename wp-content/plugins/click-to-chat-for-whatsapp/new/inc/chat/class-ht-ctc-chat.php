@@ -159,7 +159,7 @@ class HT_CTC_Chat {
         }
 
         // position
-        // default position override at js, but useful in amp pages
+        // default position overwrite at js, but useful in amp pages
         $default_position = '';
         include HT_CTC_PLUGIN_DIR .'new/inc/commons/position-to-place.php';
         $ht_ctc_chat['position'] = $position;
@@ -188,26 +188,13 @@ class HT_CTC_Chat {
         $ht_ctc_chat['pre_filled'] = (isset($ht_ctc_pagelevel['pre_filled'])) ? esc_attr($ht_ctc_pagelevel['pre_filled']) : $pre_filled;
         $ht_ctc_chat['pre_filled'] = apply_filters( 'wpml_translate_single_string', $ht_ctc_chat['pre_filled'], 'Click to Chat for WhatsApp', 'pre_filled' );
 
-        $ht_ctc_chat['url_target_d'] = ( isset( $othersettings['url_target_d'] ) ) ? esc_attr($othersettings['url_target_d']) : '_blank';
-        $ht_ctc_chat['url_structure_d'] = ( isset( $othersettings['url_structure_d'] ) ) ? esc_attr($othersettings['url_structure_d']) : '';
-        $ht_ctc_chat['url_structure_m'] = ( isset( $othersettings['url_structure_m'] ) ) ? esc_attr($othersettings['url_structure_m']) : '';
+        $ht_ctc_chat['url_target_d'] = ( isset( $options['url_target_d'] ) ) ? esc_attr($options['url_target_d']) : '_blank';
+        $ht_ctc_chat['url_structure_d'] = ( isset( $options['url_structure_d'] ) ) ? esc_attr($options['url_structure_d']) : '';
+        $ht_ctc_chat['url_structure_m'] = ( isset( $options['url_structure_m'] ) ) ? esc_attr($options['url_structure_m']) : '';
 
         // is intl input type is added
         if ( isset($options['intl']) ) {
             $ht_ctc_chat['intl'] = '1';
-        }
-
-        /**
-         * compatibility with settings - web whatsapp - desktop - if new settings not updated, based on settings set before 3.12
-         * 
-         * @since 3.12 - $ht_ctc_chat - url_structure_d, url_structure_m, url_target_d
-         * @removed since 3.12 - webandapi, $ctc['web'] 
-         *      and added 'url_structure_d', $ctc['url_structure_d']
-         * 
-         * url_structure_d = '' (blank means user not updated new settings)
-         */
-        if ( isset( $options['webandapi'] ) && '' == $ht_ctc_chat['url_structure_d'] ) {
-            $ht_ctc_chat['url_structure_d'] = 'web';
         }
 
         // need to run the updater backup
@@ -229,6 +216,19 @@ class HT_CTC_Chat {
                 $no_number = "<p style='background-color:#ffffff; margin:0; border:1px solid #fbfbfb; padding:11px; border-radius:4px; box-shadow:5px 10px 8px #888888;'>No WhatsApp Number Found!<br><small style='color:red;'>Admin Notice:<br></small><small>Add $admin_link at pluign Settings<br>If already added, <strong>clear the Cache</strong> and try.<br>If still an issue, please contact plugin developers</small></p>";
             }
         }
+
+        // notification badge
+        $ht_ctc_chat['notification_badge'] = (isset($othersettings['notification_badge'])) ? 'show' : 'hide';
+        $ht_ctc_chat['notification_count'] = (isset($othersettings['notification_count'])) ? esc_attr($othersettings['notification_count']) : '1';
+        
+        
+        $notification_time = (isset($othersettings['notification_time'])) ? esc_attr($othersettings['notification_time']) : '';
+        $notification_bg_color = (isset($othersettings['notification_bg_color'])) ? esc_attr($othersettings['notification_bg_color']) : '#ff4c4c';
+        $notification_text_color = (isset($othersettings['notification_text_color'])) ? esc_attr($othersettings['notification_text_color']) : '#ffffff';
+        
+        $notification_border_color = (isset($othersettings['notification_border_color'])) ? esc_attr($othersettings['notification_border_color']) : '';
+        $notification_border = ('' !== $notification_border_color) ? "border:2px solid $notification_border_color;" : '' ;
+        
 
         // class names
         $ht_ctc_chat['class_names'] = "ht-ctc ht-ctc-chat ctc-analytics";
@@ -441,6 +441,11 @@ class HT_CTC_Chat {
             $ctc['webhook_format'] = 'json';
         }
 
+        // notification time
+        if ('' !== $notification_time ) {
+            $ctc['n_time'] = $notification_time;
+        }
+
 
         // Greetings - init display ..
         $g_init = isset($greetings_settings['g_init']) ? esc_attr( $greetings_settings['g_init'] ) : '';
@@ -478,10 +483,20 @@ class HT_CTC_Chat {
             <div class="<?= $ht_ctc_chat['class_names'] ?>" id="<?= $ht_ctc_chat['id'] ?>"  
                 style="<?= $display_css ?> <?= $default_position ?>" <?= $ht_ctc_os['attributes'] ?> <?= $on ?> >
                 <?php
+                // add greetings dialog
                 do_action('ht_ctc_ah_in_fixed_position');
                 ?>
                 <div class="ht_ctc_style ht_ctc_chat_style">
                 <?php
+                // notification badge.
+                if ( 'show' == $ht_ctc_chat['notification_badge'] ) {
+                    ?>
+                    <span class="ht_ctc_notification" style="display:none; padding:0px; margin:0px; position:relative; float:right; z-index:9999999;">
+                        <span class="ht_ctc_badge" style="position: absolute; top: -11px; right: -11px; font-size:12px; font-weight:600; height:22px; width:22px; box-sizing:border-box; border-radius:50%; <?= $notification_border ?> background:<?= $notification_bg_color ?>; color:<?= $notification_text_color ?>; display:flex; justify-content:center; align-items:center;"><?= $ht_ctc_chat['notification_count'] ?></span>
+                    </span>
+                    <?php
+                }
+                // include style
                 if ( isset( $options['select_styles_issue'] ) ) {
                     ?>
                     <div class="ht_ctc_desktop_chat"><?php include $path_d; ?></div>

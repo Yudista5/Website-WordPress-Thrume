@@ -2,7 +2,7 @@
 /**
  * set default values
  * 
- * ccw_plugin_details - this values will be overrides 
+ * ccw_plugin_details - this values will be overwrite 
  * 
  * @package ccw
  * @since 1.0
@@ -139,7 +139,7 @@ update_option('ht_ccw_ga', $update_ccw_ga);
 $plugin_details = array(
     'version' => HT_CTC_VERSION,
 );
-// Always use update_option - override new values .. don't preseve already existing values
+// Always use update_option - overwrite new values .. don't preseve already existing values
 update_option( 'ccw_plugin_details', $plugin_details );
 
 /**

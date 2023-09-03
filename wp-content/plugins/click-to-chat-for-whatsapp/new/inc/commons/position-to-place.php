@@ -39,7 +39,7 @@ if ( isset($options['same_settings']) ) {
 }
 
 // wp_is_mobile way of position (amp may need this)
-// js will override this based on screen size
+// js will overwrite this based on screen size
 $default_position = $position;
 if ( 'yes' == $is_mobile ) {
     $default_position = $position_mobile;

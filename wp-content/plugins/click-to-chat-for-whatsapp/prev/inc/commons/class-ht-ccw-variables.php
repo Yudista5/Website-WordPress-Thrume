@@ -1,6 +1,6 @@
 <?php
 /**
- * Varibales to use among plugin - try to avoid globals .. 
+ * Variables to use among plugin - try to avoid globals .. 
  * replaced variables.php 
  */
 

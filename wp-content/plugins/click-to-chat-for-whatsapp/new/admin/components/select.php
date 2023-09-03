@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $title = (isset($input['title'])) ? $input['title'] : '';
 $description = (isset($input['description'])) ? $input['description'] : '';
 $parent_class = (isset($input['parent_class'])) ? $input['parent_class'] : '';
+$parent_id = (isset($input['parent_id'])) ? $input['parent_id'] : '';
 
 // list
 $list = [];
@@ -31,7 +32,7 @@ if (isset($input['list'])) {
 }
 
 ?>
-<div class="row ctc_component_select <?= $parent_class ?>" style="margin:0;">
+<div class="row ctc_component_select <?= $parent_class ?>" id="<?= $parent_id ?>" style="margin:0;">
     <?php
     if ( '' !== $title ) {
     ?>
